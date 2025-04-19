@@ -38,8 +38,7 @@ DEFAULT_PDB_FILES = {
     "Protein 2 (4QQI)": "https://files.rcsb.org/download/4QQI.pdb",
     "Protein 3 (8WRW)": "https://files.rcsb.org/download/8WRW.pdb",
     "Protein 4 (9J0Q)": "https://files.rcsb.org/download/9J0Q.pdb",
-    "Protein 5 (6U3V)": "https://files.rcsb.org/download/6U3V.pdb",
-    "Protein 6 (8D41)": "https://files.rcsb.org/download/8D41.pdb"
+    "Protein 5 (6U3V)": "https://files.rcsb.org/download/6U3V.pdb"
 }
 
 # Fetch PDB file from URL
@@ -61,7 +60,12 @@ def run():
     use_default = st.checkbox("Use default PDB files")
 
     if use_default:
-        selected_pdbs = st.multiselect("Select default proteins:", list(DEFAULT_PDB_FILES.keys()))  
+        selected_pdbs = st.multiselect("Select default proteins (max 5):", list(DEFAULT_PDB_FILES.keys()))
+
+        if len(selected_pdbs) > 5:
+            st.warning("⚠️ Please select **5 or fewer** proteins.")
+            return
+
         if selected_pdbs:
             fetched_files = [(fetch_pdb_from_url(DEFAULT_PDB_FILES[pdb]), pdb) for pdb in selected_pdbs]
             uploaded_files = uploaded_files or []
