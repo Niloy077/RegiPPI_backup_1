@@ -109,9 +109,12 @@ def run():
 
         st.info("""
         ### 🔎 Visualization Guide:
-        - 🔵 **Blue circles** = Proteins.
-        - 🟢 **Green lines** = Similarity ≥ 0.7 (likely interaction).
+        - 🔵 **Blue circles** represent proteins in the embedding space.
+        - 🟢 **Green lines** indicate predicted **interactions** between proteins.
+        - ✅ If two proteins are connected with a green line, their similarity is **≥ 0.7**, indicating interaction.
+        - ❌ If there is **no line**, the proteins are predicted to **not interact** under the current threshold.
         """)
+
 
         fig, ax = plt.subplots()
         ax.scatter(embedding_2d[:, 0], embedding_2d[:, 1], c='blue', s=100)
