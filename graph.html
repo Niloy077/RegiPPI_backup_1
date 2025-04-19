@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#3495eb", "id": "9606.ENSP00000285735", "label": "9606.ENSP00000285735", "shape": "dot", "title": "Protein: 9606.ENSP00000285735\nEmbedding (first 5 dims): [ 0.03056038  0.02434671  0.13633643 ... -0.08684245 -0.11447238\n -0.01298997]"}, {"color": "#eb1e1e", "id": "9606.ENSP00000310491", "label": "9606.ENSP00000310491", "shape": "dot", "title": "Protein: 9606.ENSP00000310491\nEmbedding (first 5 dims): [ 0.03056038  0.02434671  0.13633643 ... -0.08684245 -0.11447238\n -0.01298997]"}, {"color": "#3495eb", "id": "9606.ENSP00000400175", "label": "9606.ENSP00000400175", "shape": "dot", "title": "Protein: 9606.ENSP00000400175\nEmbedding (first 5 dims): [ 0.03056038  0.02434671  0.13633643 ... -0.08684245 -0.11447238\n -0.01298997]"}, {"color": "#3495eb", "id": "9606.ENSP00000267859", "label": "9606.ENSP00000267859", "shape": "dot", "title": "Protein: 9606.ENSP00000267859\nEmbedding (first 5 dims): [ 0.03056038  0.02434671  0.13633643 ... -0.08684245 -0.11447238\n -0.01298997]"}, {"color": "#3495eb", "id": "9606.ENSP00000274376", "label": "9606.ENSP00000274376", "shape": "dot", "title": "Protein: 9606.ENSP00000274376\nEmbedding (first 5 dims): [ 0.03056038  0.02434671  0.13633643 ... -0.08684245 -0.11447238\n -0.01298997]"}, {"color": "#3495eb", "id": "9606.ENSP00000497733", "label": "9606.ENSP00000497733", "shape": "dot", "title": "Protein: 9606.ENSP00000497733\nEmbedding (first 5 dims): [ 0.03056038  0.02434671  0.13633643 ... -0.08684245 -0.11447238\n -0.01298997]"}]);
+                  edges = new vis.DataSet([{"color": "#5cdb56", "from": "9606.ENSP00000285735", "title": "Combined Score: 0.0141938675824802\nConfidence Level: Highest Confidence\nConfidence Encoded: 3\nFusion: 0.0\nCooccurence: 0.0049315823764393\nHomology: 0.0290352484410115\nCoexpression: 0.0099024183120055\nExperiments: 0.0245461542252059\nDatabase: 0.013459788185275\nTextmining: 0.0071688972941713", "to": "9606.ENSP00000400175", "value": 0.70969337912401}, {"color": "#eb9636", "from": "9606.ENSP00000285735", "title": "Combined Score: 0.013298355432166\nConfidence Level: High Confidence\nConfidence Encoded: 2\nFusion: 0.0\nCooccurence: 0.0\nHomology: 0.0\nCoexpression: 0.0027965162825571\nExperiments: 0.0181594450323166\nDatabase: 0.013459788185275\nTextmining: 0.0089132580601121", "to": "9606.ENSP00000310491", "value": 0.6649177716083}, {"color": "#eb9636", "from": "9606.ENSP00000285735", "title": "Combined Score: 0.0132237294196398\nConfidence Level: High Confidence\nConfidence Encoded: 2\nFusion: 0.0\nCooccurence: 0.0064727018690766\nHomology: 0.0279139685215415\nCoexpression: 0.0284236081177936\nExperiments: 0.0048268216941652\nDatabase: 0.0\nTextmining: 0.0120616165157126", "to": "9606.ENSP00000497733", "value": 0.66118647098199}, {"color": "gray", "from": "9606.ENSP00000285735", "title": "Combined Score: 0.0066715655198408\nConfidence Level: Medium Confidence\nConfidence Encoded: 1\nFusion: 0.0\nCooccurence: 0.0\nHomology: 0.0\nCoexpression: 0.0025672936364458\nExperiments: 0.0\nDatabase: 0.0\nTextmining: 0.0078708961390012", "to": "9606.ENSP00000274376", "value": 0.33357827599204}, {"color": "#5cdb56", "from": "9606.ENSP00000310491", "title": "Combined Score: 0.0149102773027316\nConfidence Level: Highest Confidence\nConfidence Encoded: 3\nFusion: 0.0\nCooccurence: 0.0\nHomology: 0.0\nCoexpression: 0.0040343185715578\nExperiments: 0.0290197938441883\nDatabase: 0.01076783054822\nTextmining: 0.0194432407325597", "to": "9606.ENSP00000400175", "value": 0.74551386513658}, {"color": "#5cdb56", "from": "9606.ENSP00000310491", "title": "Combined Score: 0.0149102773027316\nConfidence Level: Highest Confidence\nConfidence Encoded: 3\nFusion: 0.0\nCooccurence: 0.0\nHomology: 0.0\nCoexpression: 0.0021546928734456\nExperiments: 0.0290492256837869\nDatabase: 0.01076783054822\nTextmining: 0.0212088741907681", "to": "9606.ENSP00000497733", "value": 0.74551386513658}, {"color": "#5cdb56", "from": "9606.ENSP00000310491", "title": "Combined Score: 0.0138953635323755\nConfidence Level: Highest Confidence\nConfidence Encoded: 3\nFusion: 0.0\nCooccurence: 0.0\nHomology: 0.019297817561404\nCoexpression: 0.0019254702273344\nExperiments: 0.0226036528117004\nDatabase: 0.0\nTextmining: 0.0152525203558483", "to": "9606.ENSP00000267859", "value": 0.694768176618775}, {"color": "#5cdb56", "from": "9606.ENSP00000310491", "title": "Combined Score: 0.0136416350897865\nConfidence Level: Highest Confidence\nConfidence Encoded: 3\nFusion: 0.0\nCooccurence: 0.0\nHomology: 0.0\nCoexpression: 0.0022463819318901\nExperiments: 0.0\nDatabase: 0.0\nTextmining: 0.0194219680402921", "to": "9606.ENSP00000274376", "value": 0.6820817544893251}, {"color": "#eb9636", "from": "9606.ENSP00000400175", "title": "Combined Score: 0.0121341896367575\nConfidence Level: High Confidence\nConfidence Encoded: 2\nFusion: 0.0\nCooccurence: 0.0\nHomology: 0.0\nCoexpression: 0.0022463819318901\nExperiments: 0.0\nDatabase: 0.0\nTextmining: 0.0167841541991134", "to": "9606.ENSP00000274376", "value": 0.606709481837875}, {"color": "#5cdb56", "from": "9606.ENSP00000267859", "title": "Combined Score: 0.0139998399499122\nConfidence Level: Highest Confidence\nConfidence Encoded: 3\nFusion: 0.0\nCooccurence: 0.0\nHomology: 0.0\nCoexpression: 0.0033924951624463\nExperiments: 0.0183066042303094\nDatabase: 0.013459788185275\nTextmining: 0.014571794203286", "to": "9606.ENSP00000497733", "value": 0.6999919974956099}, {"color": "#5cdb56", "from": "9606.ENSP00000274376", "title": "Combined Score: 0.013925213937386\nConfidence Level: Highest Confidence\nConfidence Encoded: 3\nFusion: 0.0\nCooccurence: 0.0\nHomology: 0.0\nCoexpression: 0.0026589826948903\nExperiments: 0.0\nDatabase: 0.0\nTextmining: 0.0196559676552354", "to": "9606.ENSP00000497733", "value": 0.6962606968692999}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"physics": {"barnesHut": {"gravitationalConstant": -3000, "centralGravity": 0.3, "springLength": 100}}, "nodes": {"shape": "dot", "size": 20}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

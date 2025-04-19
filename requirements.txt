@@ -1,0 +1,14 @@
+streamlit
+biopython
+Pillow
+scikit-learn
+matplotlib==3.10.1
+numpy
+transformers
+torch  
+pandas
+networkx
+pyvis
+py3Dmol
+requests
+
