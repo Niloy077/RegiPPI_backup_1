@@ -1,4 +1,3 @@
-# regippi_app.py
 import streamlit as st
 from Bio import PDB
 from Bio.SeqUtils import seq1
@@ -54,41 +53,67 @@ def fetch_pdb_from_url(url):
 def run():
     st.title("🔬 Protein-Protein Interaction Visualizer")
     st.subheader("Visualize and compare multiple protein interaction. 🚀")
-    st.write("Upload your own **PDB files**, or select from our default proteins.")
+    st.write("Upload your own **PDB files**, or select from our default proteins (max 5 total).")
 
+    # Upload PDBs
     uploaded_files = st.file_uploader("📂 Upload PDB Files", type=["pdb"], accept_multiple_files=True)
+    uploaded_files = uploaded_files or []
+
+    uploaded_names = set()
+    cleaned_uploaded_files = []
+    for file in uploaded_files:
+        name = file.name.replace(".pdb", "")
+        if name not in uploaded_names:
+            uploaded_names.add(name)
+            cleaned_uploaded_files.append(file)
+
+    # Select default PDBs
     use_default = st.checkbox("Use default PDB files")
+    selected_pdbs = []
+    fetched_files = []
 
     if use_default:
-        selected_pdbs = st.multiselect("Select default proteins (max 5):", list(DEFAULT_PDB_FILES.keys()))
+        available_default_names = [name for name in DEFAULT_PDB_FILES if name.replace(" (", "_").split("_")[0] not in uploaded_names]
+        selected_pdbs = st.multiselect("Select default proteins:", available_default_names)
 
-        if len(selected_pdbs) > 5:
-            st.warning("⚠️ Please select **5 or fewer** proteins.")
-            return
+        for pdb_name in selected_pdbs:
+            pdb_io = fetch_pdb_from_url(DEFAULT_PDB_FILES[pdb_name])
+            if pdb_io:
+                fetched_files.append((pdb_io, pdb_name))
 
-        if selected_pdbs:
-            fetched_files = [(fetch_pdb_from_url(DEFAULT_PDB_FILES[pdb]), pdb) for pdb in selected_pdbs]
-            uploaded_files = uploaded_files or []
-            for file, name in fetched_files:
-                if file:
-                    uploaded_files.append((file, name))
+    # Combine both sets, enforce max limit = 5
+    final_uploaded_files = []
 
-    if uploaded_files:
+    for file in cleaned_uploaded_files:
+        final_uploaded_files.append(file)
+
+    for file, name in fetched_files:
+        if len(final_uploaded_files) < 5:
+            final_uploaded_files.append((file, name))
+        else:
+            st.warning("You can only compare up to 5 proteins at once.")
+            break
+
+    if len(final_uploaded_files) > 5:
+        st.warning("Too many files selected. Please limit to 5 proteins total.")
+        return
+
+    if final_uploaded_files:
         embeddings_list = []
         protein_names = []
 
-        for file in uploaded_files:
-            if isinstance(file, tuple):  # Default file
+        for file in final_uploaded_files:
+            if isinstance(file, tuple):  # Default
                 pdb_io, name = file
                 protein_names.append(name)
-            else:  # Uploaded file
+            else:  # Uploaded
                 pdb_content = file.read()
                 if isinstance(pdb_content, bytes):
                     pdb_content = pdb_content.decode("latin-1")
                 pdb_io = io.StringIO(pdb_content)
                 protein_names.append(file.name.replace(".pdb", ""))
 
-            # Sequence & Embedding
+            # Extract sequence & get embedding
             seq = extract_sequence_from_pdb(pdb_io)
             inputs = tokenizer(seq, return_tensors="pt", add_special_tokens=True)
             with torch.no_grad():
@@ -96,7 +121,7 @@ def run():
             embedding = outputs.last_hidden_state.mean(dim=1).detach().numpy()
             embeddings_list.append(embedding)
 
-        # Prepare embeddings and names
+        # Similarity & Visualization
         embedding_matrix = np.vstack(embeddings_list)
         embedding_2d = embedding_matrix[:, :2] if embedding_matrix.shape[0] > 1 else np.hstack((embedding_matrix, np.zeros((1, 1))))
         similarity_matrix = cosine_similarity(embedding_matrix)
