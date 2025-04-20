@@ -46,19 +46,19 @@ def run():
     with col2:
         st.header("🧪 3D Protein Structure")
         if pdb_data:
-            view = py3Dmol.view(width=400, height=400)
+            view = py3Dmol.view(width="100%", height=400)  # Set width to 100%
             view.addModelsAsFrames(pdb_data)
             view.setStyle({'model': -1}, {"cartoon": {'color': 'spectrum'}})
             view.zoomTo()
             view_html = view._make_html()
 
-            # Wrap the entire viewer in a bordered container directly in the HTML
+            # Wrap the entire viewer in a bordered container with responsive width
             full_html = f"""
-            <div style="border: 3px solid black; border-radius: 10px; padding: 10px; display: inline-block;">
+            <div style="border: 3px solid black; border-radius: 10px; padding: 10px; width: 100%; box-sizing: border-box;">
                 {view_html}
             </div>
             """
-            st.components.v1.html(full_html, height=440, width=640)  # Slightly increased to fit the border
+            st.components.v1.html(full_html, height=440, scrolling=False) # Remove fixed width, add scrolling=False
 
         else:
             st.warning("No PDB data to display.")
